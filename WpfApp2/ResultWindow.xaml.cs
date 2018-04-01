@@ -17,24 +17,13 @@ namespace WpfApp2
     /// <summary>
     /// Interaction logic for ResultWindow.xaml
     /// </summary>
+
     public partial class ResultWindow : Window
     {
         public ResultWindow()
         {
             InitializeComponent();
         }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         List<double> ArriveTime = ((MainWindow)Application.
@@ -52,7 +41,7 @@ namespace WpfApp2
         int timeQuantum = ((MainWindow)Application.
         Current.MainWindow).GetTimeQuntum();
 
-        List <Process> processes = new List<Process>();
+        List<Process> processes = new List<Process>();
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -124,44 +113,54 @@ namespace WpfApp2
 
             }
 
-/*
-            // Add first column header
-            List<string> processi = new List<string>();
+            /*
+                        // Add first column header
+                        List<string> processi = new List<string>();
 
-            for (int t = 1; t <= NumberProcess; t++)
-            {
-                string z = t.ToString();
-                processi.Add("P" + z);
+                        for (int t = 1; t <= NumberProcess; t++)
+                        {
+                            string z = t.ToString();
+                            processi.Add("P" + z);
 
-            }
+                        }
 
-            */
+                        */
+
+            TextBlock ProcessID_TextBox;
+            List<string> processIDs_string = new List<string>();
+            List<int> ProcessIDs = new List<int>();
+
             if (ScheduleTypeIndex == 0)
             {
-                List<int> ProcessIDs = FCFS(ref processes);
-                List<string> processi = new List<string>();
-                for (int q = 0, i = 0, n = ProcessIDs.Count; q < total && i < n; q++, i++)
-                {
-                    processi.Add("P" + ProcessIDs[i].ToString());
-                    int m = (int)ArriveTime[0] + q;
-                    TextBlock txtBlockc = new TextBlock();
-                    txtBlockc.Text = processi[q];
-                    Grid.SetColumn(txtBlockc, m);
-                    Grid.SetRow(txtBlockc, 1);
-                    txtBlockc.FontSize = 14;
-                    txtBlockc.FontWeight = FontWeights.Bold;
-                    txtBlockc.Foreground = new SolidColorBrush(Colors.White);
-                    txtBlockc.VerticalAlignment = VerticalAlignment.Top;
-                    DynamicGrid.Children.Add(txtBlockc);
-                }
+                ProcessIDs = FCFS(ref processes);
             }
 
             if (ScheduleTypeIndex == 5)
             {
-
+                ProcessIDs = Round_Robin(ref processes);
             }
-            rootWindow.Content = DynamicGrid;
-        } 
+
+
+            //print the process ids
+            for (int q = 0, i = 0, n = ProcessIDs.Count; q < total && i < n; q++, i++)
+            {
+                processIDs_string.Add("P" + ProcessIDs[i].ToString());
+                int m = (int)ArriveTime[0] + q;
+
+                ProcessID_TextBox = new TextBlock();
+                ProcessID_TextBox.Text = processIDs_string[q];
+                Grid.SetColumn(ProcessID_TextBox, m);
+                Grid.SetRow(ProcessID_TextBox, 1);
+                ProcessID_TextBox.FontSize = 14;
+                ProcessID_TextBox.FontWeight = FontWeights.Bold;
+                ProcessID_TextBox.Foreground = new SolidColorBrush(Colors.White);
+                ProcessID_TextBox.VerticalAlignment = VerticalAlignment.Top;
+                DynamicGrid.Children.Add(ProcessID_TextBox);
+            }
+
+
+        rootWindow.Content = DynamicGrid;
+        }
 
 
 
@@ -175,7 +174,7 @@ namespace WpfApp2
         private List<int> FCFS(ref List<Process> FCFS_Processes)
         {
             List<int> processIDinTime = new List<int>();
-           
+
             for (var i = 0; i < NumberProcess; i++)
             {
                 Process to_serve = FindNextProcess_ArriveTime(FCFS_Processes, NumberProcess);
@@ -232,10 +231,12 @@ namespace WpfApp2
 
             return current;
         }
+
+
         //Round Robin 
-        private List<int> FCFS(ref List<Process> FCFS_Processes)
+        private List<int> Round_Robin(ref List<Process> FCFS_Processes)
         {
-            int burst_new = ((int)(to_serve.GetBurstTime() + 0.5));
+
             List<int> processIDinTime = new List<int>();
 
             for (var i = 0; i < NumberProcess; i++)
@@ -244,15 +245,19 @@ namespace WpfApp2
                 Process to_serve = FindNextProcess_ArriveTime(FCFS_Processes, NumberProcess);
                 to_serve.MarkAssigned();
 
-                if (burst_new > 4) {
-                    for (int j = 0, n = 4 ; j < n; j++) { 
+                int burst_new = ((int)(to_serve.GetBurstTime() + 0.5));
 
-                    processIDinTime.Add(to_serve.GetID());
+                if (burst_new > timeQuantum)
+                {
+                    for (int j = 0, n = timeQuantum; j < n; j++)
+                    {
 
-                    to_serve.MarkFinished();
+                        processIDinTime.Add(to_serve.GetID());
+
+                        to_serve.MarkFinished();
+                    }
+                    burst_new = ((int)(to_serve.GetBurstTime() + 0.5)) - 4;
                 }
-                burst_new = ((int)(to_serve.GetBurstTime() + 0.5)) - 4;
-            }
                 else
                 {
                     for (int j = 0, n = burst_new; j < n; j++)
@@ -262,10 +267,9 @@ namespace WpfApp2
 
                         to_serve.MarkFinished();
                     }
+                }
             }
-
-
-
-
+            return processIDinTime;
+        }
     }
 }
