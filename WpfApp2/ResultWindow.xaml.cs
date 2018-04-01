@@ -232,6 +232,38 @@ namespace WpfApp2
 
             return current;
         }
+        //Round Robin 
+        private List<int> FCFS(ref List<Process> FCFS_Processes)
+        {
+            int burst_new = ((int)(to_serve.GetBurstTime() + 0.5));
+            List<int> processIDinTime = new List<int>();
+
+            for (var i = 0; i < NumberProcess; i++)
+            {
+
+                Process to_serve = FindNextProcess_ArriveTime(FCFS_Processes, NumberProcess);
+                to_serve.MarkAssigned();
+
+                if (burst_new > 4) {
+                    for (int j = 0, n = 4 ; j < n; j++) { 
+
+                    processIDinTime.Add(to_serve.GetID());
+
+                    to_serve.MarkFinished();
+                }
+                burst_new = ((int)(to_serve.GetBurstTime() + 0.5)) - 4;
+            }
+                else
+                {
+                    for (int j = 0, n = burst_new; j < n; j++)
+                    {
+
+                        processIDinTime.Add(to_serve.GetID());
+
+                        to_serve.MarkFinished();
+                    }
+            }
+
 
 
 
