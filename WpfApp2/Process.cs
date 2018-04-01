@@ -113,6 +113,11 @@ namespace WpfApp2
             finished = true;
         }
 
+        public void SetBurstTime(double burst)
+        {
+            burstTime = burst;
+        }
+
         private int id;
         private double arriveTime, burstTime, priority;
         private bool assigned, finished;

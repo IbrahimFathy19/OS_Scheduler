@@ -41,6 +41,8 @@ namespace WpfApp2
         int timeQuantum = ((MainWindow)Application.
         Current.MainWindow).GetTimeQuntum();
 
+
+
         List<Process> processes = new List<Process>();
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -239,11 +241,13 @@ namespace WpfApp2
 
             List<int> processIDinTime = new List<int>();
 
-            for (var i = 0; i < NumberProcess; i++)
+            double totalBurstTime = BurstTime.Sum();
+            var m = (totalBurstTime / timeQuantum);
+            for (var i = 0; i < m; i++)
             {
 
                 Process to_serve = FindNextProcess_ArriveTime(FCFS_Processes, NumberProcess);
-                to_serve.MarkAssigned();
+             //   to_serve.MarkAssigned();
 
                 int burst_new = ((int)(to_serve.GetBurstTime() + 0.5));
 
@@ -254,9 +258,9 @@ namespace WpfApp2
 
                         processIDinTime.Add(to_serve.GetID());
 
-                        to_serve.MarkFinished();
+                 //       to_serve.MarkFinished();
                     }
-                    burst_new = ((int)(to_serve.GetBurstTime() + 0.5)) - 4;
+                    burst_new -= 4;
                 }
                 else
                 {
@@ -264,10 +268,11 @@ namespace WpfApp2
                     {
 
                         processIDinTime.Add(to_serve.GetID());
-
-                        to_serve.MarkFinished();
+                        burst_new -= 0;
+                        //to_serve.MarkFinished();
                     }
                 }
+                to_serve.SetBurstTime(burst_new);
             }
             return processIDinTime;
         }
