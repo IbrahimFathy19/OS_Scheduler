@@ -103,14 +103,14 @@ namespace WpfApp2
             return finished;
         }
 
-        public void MarkAssigned()
+        public void MarkAssigned(bool a)
         {
-            assigned = true;
+            assigned = a;
         }
 
-        public void MarkFinished()
+        public void MarkFinished(bool m)
         {
-            finished = true;
+            finished = m;
         }
 
         public void SetBurstTime(double burst)

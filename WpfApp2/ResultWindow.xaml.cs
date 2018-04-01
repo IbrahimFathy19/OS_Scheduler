@@ -95,7 +95,7 @@ namespace WpfApp2
             DynamicGrid.RowDefinitions.Add(gridRow1);
             DynamicGrid.RowDefinitions.Add(gridRow2);
 
-            for (int n = 1; n <= ArriveTime[0] + total; n++)
+            for (int n = 0; n <= ArriveTime[0] + total; n++)
             {
                 TextBlock txtBlockx = new TextBlock();
                 txtBlockx.Text = n.ToString();
@@ -114,19 +114,6 @@ namespace WpfApp2
 
 
             }
-
-            /*
-                        // Add first column header
-                        List<string> processi = new List<string>();
-
-                        for (int t = 1; t <= NumberProcess; t++)
-                        {
-                            string z = t.ToString();
-                            processi.Add("P" + z);
-
-                        }
-
-                        */
 
             TextBlock ProcessID_TextBox;
             List<string> processIDs_string = new List<string>();
@@ -161,7 +148,7 @@ namespace WpfApp2
             }
 
 
-        rootWindow.Content = DynamicGrid;
+          rootWindow.Content = DynamicGrid;
         }
 
 
@@ -180,12 +167,12 @@ namespace WpfApp2
             for (var i = 0; i < NumberProcess; i++)
             {
                 Process to_serve = FindNextProcess_ArriveTime(FCFS_Processes, NumberProcess);
-                to_serve.MarkAssigned();
+                to_serve.MarkAssigned(true);
 
                 for (int j = (int)to_serve.GetArriveTime(), n = (int)(to_serve.GetBurstTime() + 0.5) + (int)to_serve.GetArriveTime(); j < n; j++)
                     processIDinTime.Add(to_serve.GetID());
 
-                to_serve.MarkFinished();
+                to_serve.MarkFinished(true);
             }
 
             return processIDinTime;
@@ -197,19 +184,19 @@ namespace WpfApp2
             Process current = ProcessList[0]; // first element
             for (var i = 1; i < numberProcesses; i++)
             {
-                if (!current.IsAssigned() && !current.IsFinished())
-                {
-                    if (!ProcessList[i].IsAssigned() && !ProcessList[i].IsFinished())
-                    {
+                if (!current.IsFinished())
+                {//!current.IsAssigned() && 
+                    if (!ProcessList[i].IsFinished())
+                    {//!ProcessList[i].IsAssigned() && 
                         if (current.CompareArriveTime(ProcessList[i]) == -1) /*means that current 
                         arrived before next*/
                         { }
-
-                        else if (current.CompareArriveTime(ProcessList[i]) == -1) /* they both arrived
+#if 0
+                        else if (current.CompareArriveTime(ProcessList[i]) == 0) /* they both arrived
                         at the same time*/
                         {
                             // we need to compare burst time of each
-                            if (current.CompareBurstTime(ProcessList[i]) == -1) /* means that current 
+                            if (current.CompareBurstTime(ProcessList[i]) == 1) /* means that current 
                             has burst time less than next*/
                             { }
 
@@ -218,8 +205,8 @@ namespace WpfApp2
                             {
                                 current = ProcessList[i];
                             }
-
                         }
+#endif
                         else // current arrived after next
                         {
                             current = ProcessList[i];
@@ -247,31 +234,31 @@ namespace WpfApp2
             {
 
                 Process to_serve = FindNextProcess_ArriveTime(FCFS_Processes, NumberProcess);
-             //   to_serve.MarkAssigned();
+             //   to_serve.MarkAssigned(true);
 
                 int burst_new = ((int)(to_serve.GetBurstTime() + 0.5));
 
-                if (burst_new > timeQuantum)
+                if (burst_new >= timeQuantum)
                 {
                     for (int j = 0, n = timeQuantum; j < n; j++)
                     {
 
                         processIDinTime.Add(to_serve.GetID());
-
-                 //       to_serve.MarkFinished();
                     }
                     burst_new -= 4;
+                   // to_serve.MarkAssigned(false);
                 }
                 else
                 {
                     for (int j = 0, n = burst_new; j < n; j++)
                     {
-
                         processIDinTime.Add(to_serve.GetID());
-                        burst_new -= 0;
-                        //to_serve.MarkFinished();
                     }
+                    burst_new = 0;
                 }
+                if(burst_new == 0)
+                    to_serve.MarkFinished(true);
+
                 to_serve.SetBurstTime(burst_new);
             }
             return processIDinTime;
